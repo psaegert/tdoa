@@ -2,7 +2,7 @@ import numpy as np
 import random
 
 
-def generate_random_tdoa_data(xmin: float, xmax: float, c: float = 343.0, n: int = 3, epsilon: float = 1, noise: float = 0.0) -> tuple[np.ndarray, np.ndarray, list[tuple[tuple[int, int], float]]]:
+def generate_random_tdoa_data(xmin: float, xmax: float, c: float = 343.0, m: int = 3, epsilon: float = 1, noise: float = 0.0, all_pairs: bool = False) -> tuple[np.ndarray, np.ndarray, list[tuple[tuple[int, int], float]]]:
     """
     Generate random TDOA data for testing purposes.
 
@@ -14,12 +14,23 @@ def generate_random_tdoa_data(xmin: float, xmax: float, c: float = 343.0, n: int
         Maximum value for x and y coordinates.
     c : float, optional
         Speed of sound in air (m/s), by default 343.0.
-    n : int, optional
+    m : int, optional
         Number of microphones, by default 3.
     epsilon : float, optional
         Minimum distance between microphones, by default 1.
     noise : float, optional
         Amount of noise to add to time differences, by default 0.0.
+    all_pairs : bool, optional
+        Whether to calculate time differences between all pairs of microphones, by default False.
+
+    Returns
+    -------
+    sound_loc : np.ndarray
+        (2,) array containing sound location.
+    mic_locations : np.ndarray
+        (N, 2) array containing microphone locations.
+    time_diffs : list[tuple[tuple[int, int], float]]
+        List containing pairs of microphone indices and corresponding time differences.
     """
 
     # Generate random sound location
@@ -30,7 +41,7 @@ def generate_random_tdoa_data(xmin: float, xmax: float, c: float = 343.0, n: int
 
     # Calculate time differences between pairs of microphones
     time_diffs = []
-    for i in range(1, n):
+    for i in range(1, m):
         # Add a new microphone
         mic_locations.append((random.uniform(xmin, xmax), random.uniform(xmin, xmax)))
 
@@ -46,5 +57,15 @@ def generate_random_tdoa_data(xmin: float, xmax: float, c: float = 343.0, n: int
         time_diff = (d1 - d2) / c
         time_diff += random.uniform(-noise, noise)
         time_diffs.append(((i, j), time_diff))
+
+    if all_pairs:
+        time_diffs = []
+        for i in range(m):
+            for j in range(i + 1, m):
+                d1 = np.sqrt((sound_loc[0] - mic_locations[i][0])**2 + (sound_loc[1] - mic_locations[i][1])**2)
+                d2 = np.sqrt((sound_loc[0] - mic_locations[j][0])**2 + (sound_loc[1] - mic_locations[j][1])**2)
+                time_diff = (d1 - d2) / c
+                time_diff += random.uniform(-noise, noise)
+                time_diffs.append(((i, j), time_diff))
 
     return np.array(sound_loc), np.array(mic_locations), time_diffs
