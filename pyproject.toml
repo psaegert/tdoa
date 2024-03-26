@@ -1,0 +1,72 @@
+[project]
+name = "tdoa"
+description = "Time Difference of Arrival (TDOA)"
+authors = [
+    {name = "Paul Saegert"},
+    ]
+readme = "README.md"
+requires-python = ">=3.11"
+dynamic = ["dependencies"]
+version = "0.0.1"
+urls = { Github = "https://github.com/psaegert/tdoa"}
+
+[project.scripts]
+tdoa = "tdoa.__main__:main"
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "mypy",
+    "flake8",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[build-system]
+requires = [
+    "setuptools>=68",
+    "wheel",
+    "platformdirs==3.10.0",
+]
+build-backend = "setuptools.build_meta"
+
+
+[tool.flake8]
+ignore = ["E501"]
+exclude = [
+    ".git",
+	"__pycache__",
+	"documentation",
+	"build",
+	"venv",
+	".venv",
+	"env",
+	".env",
+	"images",
+]
+
+
+[tool.mypy]
+no_implicit_optional = false
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+explicit_package_bases = true
+exclude = ".venv"
+ignore_missing_imports = true
+
+[tool.isort]
+multi_line_output = 2
+line_length = 500
